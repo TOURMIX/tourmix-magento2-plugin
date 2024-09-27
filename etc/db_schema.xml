@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Tourmix Shipping
+ *
+ * @copyright   Copyright (c) 2024 Tourmix (https://tourmix.delivery/)
+ * @author      Vadym Drobko <vdrob17@gmail.com>
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="sales_order" resource="sales">
+        <column xsi:type="text" name="tourmix_timewindow" nullable="true" comment="Tourmix Time Window"/>
+    </table>
+    <table name="quote">
+        <column xsi:type="text" name="tourmix_timewindow" nullable="true" comment="Tourmix Time Window"/>
+    </table>
+    <table name="sales_shipment" resource="sales">
+        <column xsi:type="text" name="tourmix_access_key" nullable="true" comment="Access key"/>
+        <column xsi:type="text" name="tourmix_label_url" nullable="true" comment="Shipping Label URL or Data"/>
+    </table>
+</schema>

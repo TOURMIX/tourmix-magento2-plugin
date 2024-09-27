@@ -1,0 +1,21 @@
+{
+  "name": "tourmix/module-shipping",
+  "version": "1.0.0",
+  "description": "Integration with Tourmix shipping provider",
+  "type": "magento2-module",
+  "require": {
+    "magento/framework": "*",
+    "magento/module-offline-shipping": "100.4.*"
+  },
+  "license": [
+    "Proprietary"
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Tourmix\\Shipping\\": ""
+    }
+  }
+}

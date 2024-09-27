@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Tourmix Shipping
+ *
+ * @copyright   Copyright (c) 2024 Tourmix (https://tourmix.delivery/)
+ * @author      Vadym Drobko <vdrob17@gmail.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="movetoquote"
+                type="Tourmix\Shipping\Plugin\ShippingInformationManagementPlugin"/>
+    </type>
+    <type name="Magento\Sales\Controller\Adminhtml\Shipment\PrintAction">
+        <plugin name="print_tourmix_label"
+                type="Tourmix\Shipping\Plugin\PrintTourmixLabel"/>
+    </type>
+
+    <type name="Magento\Quote\Model\Cart\ShippingMethodConverter">
+        <plugin name="add_show_time_window_to_method" type="Tourmix\Shipping\Plugin\Carrier\TimeWindow" disabled="false" sortOrder="30"/>
+    </type>
+
+    <type name="Magento\Quote\Model\Quote\Address\Rate">
+        <plugin name="add_show_time_window_to_method_rate" type="Tourmix\Shipping\Plugin\Quote\Address\Rate" disabled="false" sortOrder="3"/>
+    </type>
+</config>
