@@ -4,11 +4,15 @@ Tourmix Shipping Integration is a custom Magento 2 module that enables integrati
 
 **Features**
 * Tourmix shipping method available during checkout.
-* Real-time shipping rates fetched from the Tourmix API.
 * Configurable shipping method settings in the Magento Admin.
 * Supports shipping label generation via Tourmix API.
 * API request and response logging.
 * Compatible with Magento 2.4.x.
+* Get last status and display it in shipping comment section
+* Time window iframe which you can set time window for courier(displayed only for package that under specific weight and for allowed zips)
+![Screenshot from 2024-09-27 19-05-11](https://github.com/user-attachments/assets/a23cdcb0-eada-4248-8040-a14acc0efa51)
+ 
+![Screenshot from 2024-09-27 18-11-41](https://github.com/user-attachments/assets/6d122b97-3073-480d-b76d-810fef1c22f8)
 
 **Requirements**
 * Magento: 2.4.x or later.
@@ -54,9 +58,11 @@ To configure the module in the Magento Admin:
 4. Enabled: Yes/No.
 5. Title: Set the title shown to customers during checkout.
 6. API Key: Enter your Tourmix API key.
-7. API Secret: Enter your Tourmix API secret.
-8. Allowed Countries: Define the countries where this method is available.
-9. Default Rate: Set a default rate to display if the API is unavailable.
+7. API URL: Enter your Tourmix API url.
+9. Shipping Price: Set a price for shiping.
+10. Allowed Weight to display time window iframe	![Screenshot from 2024-09-27 18-10-43](https://github.com/user-attachments/assets/1ccd359b-df18-4002-8e26-77149f09f9f6)
+![Screenshot from 2024-09-27 18-10-55](https://github.com/user-attachments/assets/6f8050a0-1f18-44f6-bcc3-e2a3bc8ba12d)
+
 
 __NOTE_:Also need to set origin information because Tourmix API uses start location of store from where delivery start_
 
@@ -75,11 +81,14 @@ Disable the module:
 
 `php bin/magento module:disable Tourmix_Shipping
 `
+
 Remove the module files:
 
 
 `rm -rf <magento_root>/app/code/Tourmix/Shipping
 `
+
+
 Run the upgrade script and flush the cache:
 
 
