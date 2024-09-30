@@ -60,8 +60,9 @@ class TourmixApiClient
      * @return array
      * @throws GuzzleException
      */
-    public function parcelCreation(OrderInterface $order): array
+    public function parcelCreation($shipmentIncrement, OrderInterface $order): array
     {
+        $address = $this->getAddress($order->getShippingAddress()->getStreetLine(1));
         $dataArray = [
             "parcels" => [
                 [
@@ -74,12 +75,16 @@ class TourmixApiClient
                     "end_location" => [
                         "zip" => $order->getShippingAddress()->getPostcode(),
                         "city" => $order->getShippingAddress()->getCity(),
-                        "street" => $order->getShippingAddress()->getStreetLine(1),
-                        "number" => $order->getShippingAddress()->getStreetLine(2),
+                        "street" => $address['street'],
+                        "number" => $address['number']
+                            ?: $this->getAddress($order->getShippingAddress()->getStreetLine(2))
+                                ?: 0,
                     ],
                     "weight" => (int)$order->getWeight(),
                     "timewindow" => $order->getData('tourmix_timewindow') ?: '0',
                     "size" => "-",
+                    "outer_id" => $shipmentIncrement,
+                    "outer_id_type" => "MAGENTO"
                 ]
             ]
         ];
@@ -135,5 +140,30 @@ class TourmixApiClient
             }
         }
         return in_array($zip, $data);
+    }
+
+    /**
+     * @param string $address
+     * @return array|string[]
+     */
+    private function getAddress(string $address): array
+    {
+        if (preg_match('/\d+/', $address, $matches)) {
+            $houseNumber = $matches[0];
+
+            $addressWithoutNumber = preg_replace('/\d+/', '', $address);
+
+            // Trim any extra spaces
+            $addressWithoutNumber = trim($addressWithoutNumber);
+
+            return [
+                'number' => $houseNumber,
+                'street' => $addressWithoutNumber,
+            ];
+        } else {
+            return [
+                'street' => $address,
+            ];
+        }
     }
 }

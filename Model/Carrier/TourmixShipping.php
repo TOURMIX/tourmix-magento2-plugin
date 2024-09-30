@@ -57,7 +57,6 @@ class TourmixShipping extends AbstractCarrier implements CarrierInterface
             return false;
         }
 
-
         $result = $this->rateResultFactory->create();
         $method = $this->rateMethodFactory->create();
 

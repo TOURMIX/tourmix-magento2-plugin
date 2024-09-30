@@ -47,7 +47,7 @@ class ShipmentObserver implements ObserverInterface
         }
         try {
             // Send a POST request to the external API
-            $apiResponse = $this->tourmixApiClient->parcelCreation($order);
+            $apiResponse = $this->tourmixApiClient->parcelCreation($shipment->getIncrementId(), $order);
             $shipment->setData('tourmix_access_key', $apiResponse['access_key']);
             $shipment->setData('tourmix_label_url', $apiResponse['label_url']);
             $this->shipmentRepository->save($shipment);
