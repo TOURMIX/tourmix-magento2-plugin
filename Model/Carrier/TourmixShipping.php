@@ -24,6 +24,7 @@ use Tourmix\Shipping\Service\TourmixApiClient;
 class TourmixShipping extends AbstractCarrier implements CarrierInterface
 {
     protected $_code = 'tourmix_shipping';
+    public const ALLOWED_WEIGHT = 6;
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -96,7 +97,7 @@ class TourmixShipping extends AbstractCarrier implements CarrierInterface
      */
     public function validateWeight(float $weight): bool
     {
-        if ($weight <= (float)$this->getConfigData('allowed_weight')) {
+        if ($weight <= self::ALLOWED_WEIGHT) {
             return true;
         } else {
             return false;

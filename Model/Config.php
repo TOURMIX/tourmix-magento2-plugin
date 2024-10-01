@@ -29,7 +29,6 @@ class Config
     const XML_PATH_TOURMIX_SHIPPING_API_URL = 'carriers/tourmix_shipping/api_url';
     const XML_PATH_TOURMIX_SHIPPING_API_TOKEN = 'carriers/tourmix_shipping/api_token';
     const XML_PATH_TOURMIX_SHIPPING_PRICE = 'carriers/tourmix_shipping/shipping_price';
-    const XML_PATH_TOURMIX_SHIPPING_ALLOWED_WEIGHT = 'carriers/tourmix_shipping/allowed_weight';
 
     /**
      * Config constructor.
@@ -116,21 +115,6 @@ class Config
     {
         return (float)$this->scopeConfig->getValue(
             self::XML_PATH_TOURMIX_SHIPPING_PRICE,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Get the allowed weight for the time window iframe
-     *
-     * @param string|null $store
-     * @return float
-     */
-    public function getAllowedWeight(string $store = null): float
-    {
-        return (float)$this->scopeConfig->getValue(
-            self::XML_PATH_TOURMIX_SHIPPING_ALLOWED_WEIGHT,
             ScopeInterface::SCOPE_STORE,
             $store
         );

@@ -12,7 +12,9 @@ namespace Tourmix\Shipping\Service;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Payment\Model\MethodInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Tourmix\Shipping\Model\Config as TourmixConfig;
 
@@ -56,13 +58,16 @@ class TourmixApiClient
     }
 
     /**
+     * @param $shipmentIncrement
      * @param OrderInterface $order
      * @return array
      * @throws GuzzleException
+     * @throws LocalizedException
      */
     public function parcelCreation($shipmentIncrement, OrderInterface $order): array
     {
         $address = $this->getAddress($order->getShippingAddress()->getStreetLine(1));
+        $cod = $this->isOfflinePaymentMethod($order);
         $dataArray = [
             "parcels" => [
                 [
@@ -84,7 +89,9 @@ class TourmixApiClient
                     "timewindow" => $order->getData('tourmix_timewindow') ?: '0',
                     "size" => "-",
                     "outer_id" => $shipmentIncrement,
-                    "outer_id_type" => "MAGENTO"
+                    "outer_id_type" => "MAGENTO",
+                    "cod" => $this->isOfflinePaymentMethod($order),
+                    "totalGross" => $cod ? $order->getGrandTotal() : null,
                 ]
             ]
         ];
@@ -165,5 +172,22 @@ class TourmixApiClient
                 'street' => $address,
             ];
         }
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return bool
+     * @throws LocalizedException
+     */
+    private function isOfflinePaymentMethod(OrderInterface $order): bool
+    {
+        $payment = $order->getPayment();
+        if ($payment) {
+            $paymentMethodInstance = $payment->getMethodInstance();
+            if ($paymentMethodInstance instanceof MethodInterface) {
+                return $paymentMethodInstance->isOffline();
+            }
+        }
+        return false;
     }
 }
