@@ -42,7 +42,7 @@ class ShipmentObserver implements ObserverInterface
         $shipment = $observer->getEvent()->getShipment();
         $order = $shipment->getOrder();
         $shippingMethod = $order->getShippingMethod();
-        if ($shipment->getData('tourmix_access_key') && $shippingMethod != self::SHIPPING_METHOD_CODE) {
+        if ($shipment->getData('tourmix_access_key') || $shippingMethod != self::SHIPPING_METHOD_CODE) {
             return;
         }
         try {

@@ -25,9 +25,11 @@ class Config
     const XML_PATH_ORIGIN_STREET_LINE_2 = 'shipping/origin/street_line2';
 
     const XML_PATH_TOURMIX_SHIPPING_ACTIVE = 'carriers/tourmix_shipping/active';
+    const XML_PATH_TOURMIX_SHIPPING_SANDBOX_MODE = 'carriers/tourmix_shipping/sandbox_mode';
+
     const XML_PATH_TOURMIX_SHIPPING_TITLE = 'carriers/tourmix_shipping/title';
-    const XML_PATH_TOURMIX_SHIPPING_API_URL = 'carriers/tourmix_shipping/api_url';
     const XML_PATH_TOURMIX_SHIPPING_API_TOKEN = 'carriers/tourmix_shipping/api_token';
+    const XML_PATH_TOURMIX_SHIPPING_TEST_API_TOKEN = 'carriers/tourmix_shipping/test_api_token';
     const XML_PATH_TOURMIX_SHIPPING_PRICE = 'carriers/tourmix_shipping/shipping_price';
 
     /**
@@ -59,6 +61,21 @@ class Config
     }
 
     /**
+     * Check if the shipping method is active
+     *
+     * @param string|null $store
+     * @return bool
+     */
+    public function isSandboxEnabled(string $store = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_TOURMIX_SHIPPING_SANDBOX_MODE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
      * Get the shipping method title
      *
      * @param string|null $store
@@ -74,21 +91,6 @@ class Config
     }
 
     /**
-     * Get the API URL
-     *
-     * @param string|null $store
-     * @return string
-     */
-    public function getApiUrl(string $store = null): string
-    {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_TOURMIX_SHIPPING_API_URL,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
      * Get the encrypted API token
      *
      * @param string|null $store
@@ -98,6 +100,23 @@ class Config
     {
         $apiToken = $this->scopeConfig->getValue(
             self::XML_PATH_TOURMIX_SHIPPING_API_TOKEN,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+        return (!empty($apiToken)) ? $this->encryptor->decrypt($apiToken) : '';
+
+    }
+
+    /**
+     * Get the encrypted TEST API token
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getTestApiToken(string $store = null): string
+    {
+        $apiToken = $this->scopeConfig->getValue(
+            self::XML_PATH_TOURMIX_SHIPPING_TEST_API_TOKEN,
             ScopeInterface::SCOPE_STORE,
             $store
         );

@@ -13,6 +13,7 @@
         <carriers>
             <tourmix_shipping>
                 <active>0</active>
+                <sandbox_mode>1</sandbox_mode>
                 <title>Tourmix házhozszállítás</title>
                 <model>Tourmix\Shipping\Model\Carrier\TourmixShipping</model>
                 <shipping_price>1500</shipping_price>

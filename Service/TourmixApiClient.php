@@ -20,6 +20,9 @@ use Tourmix\Shipping\Model\Config as TourmixConfig;
 
 class TourmixApiClient
 {
+    const API_URL = 'https://tourmix.delivery/api/';
+
+    const TEST_API_URL = 'https://test.tourmix.delivery/api/';
     const TOURMIX_ALLOWED_ZIPS = 'https://tourmix.delivery/api/allowed_zips';
 
     /**
@@ -45,8 +48,9 @@ class TourmixApiClient
      */
     private function callApi(string $urlRequest, string $methodType, $body = null): ?string
     {
-        $apiToken = $this->config->getApiToken();
-        $apiUrl = $this->config->getApiUrl();
+        $isSandbox = $this->config->isSandboxEnabled();
+        $apiToken = $isSandbox ? $this->config->getTestApiToken() : $this->config->getApiToken();
+        $apiUrl = $isSandbox ? self::TEST_API_URL : self::API_URL;
         $response = $this->client->request(
             $methodType,
             $apiUrl . $urlRequest . '?api_token=' . $apiToken,
@@ -82,7 +86,7 @@ class TourmixApiClient
                         "city" => $order->getShippingAddress()->getCity(),
                         "street" => $address['street'],
                         "number" => $address['number']
-                            ?: $this->getAddress($order->getShippingAddress()->getStreetLine(2))
+                            ?: (int)$this->getAddress($order->getShippingAddress()->getStreetLine(2))
                                 ?: 0,
                     ],
                     "weight" => (int)$order->getWeight(),
@@ -90,8 +94,8 @@ class TourmixApiClient
                     "size" => "-",
                     "outer_id" => $shipmentIncrement,
                     "outer_id_type" => "MAGENTO",
-                    "cod" => $this->isOfflinePaymentMethod($order),
-                    "totalGross" => $cod ? $order->getGrandTotal() : null,
+                    "cod" => $cod,
+                    "totalGross" => $cod ? (float)$order->getGrandTotal() : null,
                 ]
             ]
         ];
@@ -169,6 +173,7 @@ class TourmixApiClient
             ];
         } else {
             return [
+                'number' => false,
                 'street' => $address,
             ];
         }
