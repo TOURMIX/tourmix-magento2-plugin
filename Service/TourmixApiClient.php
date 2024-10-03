@@ -94,8 +94,7 @@ class TourmixApiClient
                     "size" => "-",
                     "outer_id" => $shipmentIncrement,
                     "outer_id_type" => "MAGENTO",
-                    "cod" => $cod,
-                    "totalGross" => $cod ? (float)$order->getGrandTotal() : null,
+                    "cod" => $cod ? (float)$order->getGrandTotal() : null
                 ]
             ]
         ];
@@ -120,6 +119,15 @@ class TourmixApiClient
             'status_label' => array_first($response["parcels"])["last_status"]['status_label'],
             'status_created' => array_first($response["parcels"])["last_status"]['created_at'],
         ];
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function generateLabel(string $accessKeys = null): string
+    {
+        $response = $this->json->unserialize($this->callApi('shipping_label/' . $accessKeys, 'GET'));
+        return $response['href'];
     }
 
     /**

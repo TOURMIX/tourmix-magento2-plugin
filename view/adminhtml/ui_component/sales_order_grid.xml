@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Tourmix Shipping
+ *
+ * @copyright   Copyright (c) 2024 Tourmix (https://tourmix.delivery/)
+ * @author      Vadym Drobko <vdrob17@gmail.com>
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <settings>
+        <buttons>
+            <button name="close_delivered_orders">
+                <url path="tourmix/order/closeDelivered"/>
+                <class>secondary</class>
+                <label translate="true">Close delivered TOURMIX orders</label>
+            </button>
+            <button name="add">
+                <url path="sales/order_create/start"/>
+                <class>primary</class>
+                <label translate="true">Create New Order</label>
+                <aclResource>Magento_Sales::create</aclResource>
+            </button>
+        </buttons>
+        <spinner>sales_order_columns</spinner>
+        <deps>
+            <dep>sales_order_grid.sales_order_grid_data_source</dep>
+        </deps>
+    </settings>
+</listing>
