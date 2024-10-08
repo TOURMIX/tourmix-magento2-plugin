@@ -56,12 +56,13 @@ To configure the module in the Magento Admin:
 2. Select Tourmix Shipping.
 3. Configure the following settings:
 4. Enabled: Yes/No.
-5. Title: Set the title shown to customers during checkout.
-6. API Key: Enter your Tourmix API key.
-7. API URL: Enter your Tourmix API url.
+5. Enable Sandbox : Yes/No (Set NO if you wann test it before) 
+6. Title: Set the title shown to customers during checkout.
+7. API Token: Enter your Tourmix API key.
+8. Test API Token: Enter your Tourmix Test API key.
 9. Shipping Price: Set a price for shiping.
-10. Allowed Weight to display time window iframe	![Screenshot from 2024-09-27 18-10-43](https://github.com/user-attachments/assets/1ccd359b-df18-4002-8e26-77149f09f9f6)
-![Screenshot from 2024-09-27 18-10-55](https://github.com/user-attachments/assets/6f8050a0-1f18-44f6-bcc3-e2a3bc8ba12d)
+![Screenshot from 2024-09-27 18-10-43](https://github.com/user-attachments/assets/1ccd359b-df18-4002-8e26-77149f09f9f6)
+![image](https://github.com/user-attachments/assets/9a6e0e2e-17eb-4f74-8f86-543031209efe)
 
 
 __NOTE_:Also need to set origin information because Tourmix API uses start location of store from where delivery start_
