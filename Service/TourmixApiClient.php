@@ -45,20 +45,38 @@ class TourmixApiClient
      * @param null $body
      * @return string|null
      * @throws GuzzleException
+     * @throws LocalizedException
      */
     private function callApi(string $urlRequest, string $methodType, $body = null): ?string
     {
         $isSandbox = $this->config->isSandboxEnabled();
         $apiToken = $isSandbox ? $this->config->getTestApiToken() : $this->config->getApiToken();
         $apiUrl = $isSandbox ? self::TEST_API_URL : self::API_URL;
-        $response = $this->client->request(
-            $methodType,
-            $apiUrl . $urlRequest . '?api_token=' . $apiToken,
-            ['json' => $body]);
-        if ($response->getStatusCode() == 200) {
-            return $response->getBody()->getContents();
+        
+        $fullUrl = $apiUrl . $urlRequest . '?api_token=' . $apiToken;
+        
+        try {
+            $response = $this->client->request(
+                $methodType,
+                $fullUrl,
+                ['json' => $body]
+            );
+            
+            $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody()->getContents();
+            
+            if ($statusCode == 200) {
+                return $responseBody;
+            } else {
+                throw new LocalizedException(
+                    __('API call failed with status %1. Response: %2', $statusCode, $responseBody)
+                );
+            }
+        } catch (GuzzleException $e) {
+            throw new LocalizedException(
+                __('API call to %1 failed: %2', $fullUrl, $e->getMessage())
+            );
         }
-        return null;
     }
 
     /**
@@ -72,6 +90,13 @@ class TourmixApiClient
     {
         $address = $this->getAddress($order->getShippingAddress()->getStreetLine(1));
         $cod = $this->isOfflinePaymentMethod($order);
+        
+        // Get timewindow data from order or shipping address
+        $timewindow = $order->getData('tourmix_timewindow');
+        if (!$timewindow && $order->getShippingAddress() && $order->getShippingAddress()->getExtensionAttributes()) {
+            $timewindow = $order->getShippingAddress()->getExtensionAttributes()->getTimewindow();
+        }
+        
         $dataArray = [
             "parcels" => [
                 [
@@ -90,7 +115,7 @@ class TourmixApiClient
                                 ?: 0,
                     ],
                     "weight" => (int)$order->getWeight(),
-                    "timewindow" => $order->getData('tourmix_timewindow') ?: '0',
+                    "timewindow" => $timewindow ?: '0',
                     "size" => "-",
                     "outer_id" => $shipmentIncrement,
                     "outer_id_type" => "MAGENTO",
@@ -98,11 +123,34 @@ class TourmixApiClient
                 ]
             ]
         ];
-        $response = $this->json->unserialize($this->callApi('post_multiple_parcels', "POST", $dataArray));
+        
+        // Log the request data for debugging
+        error_log('Tourmix API Request Data: ' . $this->json->serialize($dataArray));
+        
+        $responseBody = $this->callApi('post_multiple_parcels', "POST", $dataArray);
+        
+        if (!$responseBody) {
+            throw new LocalizedException(__('Empty response from Tourmix API'));
+        }
+        
+        $response = $this->json->unserialize($responseBody);
+        
+        // Log the response for debugging
+        error_log('Tourmix API Response: ' . $responseBody);
+        
+        // Validate response structure
+        if (!isset($response["parcels"]) || empty($response["parcels"])) {
+            throw new LocalizedException(__('Invalid response structure from Tourmix API: %1', $responseBody));
+        }
+        
+        $firstParcel = array_first($response["parcels"]);
+        if (!isset($firstParcel["access_key"])) {
+            throw new LocalizedException(__('Access key not found in Tourmix API response: %1', $responseBody));
+        }
 
         return [
-            'access_key' => array_first($response["parcels"])["access_key"],
-            'label_url' => $response['label_url'],
+            'access_key' => $firstParcel["access_key"],
+            'label_url' => $response['label_url'] ?? null,
         ];
     }
 

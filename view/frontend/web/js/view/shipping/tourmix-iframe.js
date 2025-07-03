@@ -16,6 +16,9 @@ define([
         initialize: function () {
             this._super();
             this.isIframeVisible = ko.observable(false);
+            
+            // Make this component globally accessible
+            window.tourmixIframeComponent = this;
 
             // Subscribe to shipping method change
             quote.shippingMethod.subscribe(this.toggleIframeVisibility.bind(this));
@@ -29,21 +32,55 @@ define([
                     timewindowData(event.data.timewindow); // Store the time window data
                     console.log('Received time window:', timewindowData());
 
-                    // Save timewindow to quote customAttributes
-                    if (quote.shippingAddress()) {
-                        var shippingAddress = quote.shippingAddress();
+                    // Store timewindow data but don't save shipping information yet
+                    // This will be handled when user clicks Next button
+                }
+            }, false);
 
+            // Listen for Next button clicks using DOM event delegation
+            var self = this;
+            $(document).on('click', '.button.action.continue.primary', function(e) {
+                console.log('Next button clicked, checking for timewindow data');
+                if (timewindowData()) {
+                    console.log('Attaching timewindow data to shipping address');
+                    
+                    // Attach timewindow to shipping address
+                    var shippingAddress = quote.shippingAddress();
+                    if (shippingAddress) {
                         if (!shippingAddress.extensionAttributes) {
                             shippingAddress.extensionAttributes = {};
                         }
-
-                        shippingAddress.extensionAttributes.timewindow = event.data.timewindow;
-
-                        // Save the shipping information
-                        setShippingInformationAction();
+                        shippingAddress.extensionAttributes.timewindow = timewindowData();
+                        quote.shippingAddress(shippingAddress);
+                        console.log('Timewindow attached:', timewindowData());
                     }
+                    
+                    // Call setShippingInformationAction to save the data
+                    setShippingInformationAction();
                 }
-            }, false);
+            });
+
+            // Also listen for any form submission in the shipping step
+            $(document).on('submit', '#co-shipping-form', function(e) {
+                console.log('Shipping form submitted, checking for timewindow data');
+                if (timewindowData()) {
+                    console.log('Attaching timewindow data to shipping address');
+                    
+                    // Attach timewindow to shipping address
+                    var shippingAddress = quote.shippingAddress();
+                    if (shippingAddress) {
+                        if (!shippingAddress.extensionAttributes) {
+                            shippingAddress.extensionAttributes = {};
+                        }
+                        shippingAddress.extensionAttributes.timewindow = timewindowData();
+                        quote.shippingAddress(shippingAddress);
+                        console.log('Timewindow attached:', timewindowData());
+                    }
+                    
+                    // Call setShippingInformationAction to save the data
+                    setShippingInformationAction();
+                }
+            });
         },
         toggleIframeVisibility: function (selectedShippingMethod) {
             // Check if Tourmix Shipping is selected and show window time
