@@ -93,9 +93,6 @@ class TourmixApiClient
         
         // Get timewindow data from order or shipping address
         $timewindow = $order->getData('tourmix_timewindow');
-        if (!$timewindow && $order->getShippingAddress() && $order->getShippingAddress()->getExtensionAttributes()) {
-            $timewindow = $order->getShippingAddress()->getExtensionAttributes()->getTimewindow();
-        }
         
         $dataArray = [
             "parcels" => [
